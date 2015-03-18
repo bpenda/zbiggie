@@ -247,6 +247,7 @@ extern void key_handler()
 		}
     }
 
+    
 	sti();
 	send_eoi(KEY_LINE);	
 	//while(1);
