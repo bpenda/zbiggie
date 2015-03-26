@@ -287,6 +287,7 @@ extern void key_handler()
 			if ( (scan2ASCII[(int)in] == 'l') && ctrl_flag)
 			{
 				term_clear();
+                term_init();
 				
 			}
             //else if(scan2ASCII[(int)in] == 'j')
