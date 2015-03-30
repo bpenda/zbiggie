@@ -36,8 +36,7 @@ char shift2ASCII[256] =
 
 int shift_l_flag = 0, shift_r_flag = 0, caps_lock_flag = 0, ctrl_flag = 0;
 
-volatile int rtc_f = 0; 
-
+volatile int rtc_f = 0;
 
 extern uint8_t
 INB (uint16_t port)
@@ -208,8 +207,7 @@ extern void key_handler()
 	if (in == DOWN_ARROW)
 	{
 		//do nothing
-        
-        term_write("hello again, world!");
+		term_write(term_read()); 
 	}
     else if(in == UP_ARROW)
     {
