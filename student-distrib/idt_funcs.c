@@ -208,6 +208,8 @@ extern void key_handler()
 	if (in == DOWN_ARROW)
 	{
 		//do nothing
+        
+        term_write("hello again, world!");
 	}
     else if(in == UP_ARROW)
     {

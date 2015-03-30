@@ -250,6 +250,10 @@ entry (unsigned long magic, unsigned long addr)
 	}
 
 	init_paging();
+	term_open();
+	//term_close();
+	//term_write("hello again, world!");
+	
 	/* Execute the first program (`shell') ... */
 	//int * p = NULL;
 	//*p =1;
