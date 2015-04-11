@@ -310,6 +310,11 @@ entry (unsigned long magic, unsigned long addr)
 	term_close();
 	
 	*/
+	ece391_execute("testprint");
+	ece391_execute("hello");
+	ece391_execute("hello");
+	ece391_execute("hello");
+	ece391_execute("hello");
 	ece391_execute("hello");
 	/*
 	init_pd(1);
@@ -332,7 +337,7 @@ entry (unsigned long magic, unsigned long addr)
 	putc(*ptr);
 	*/
 	/* Spin (nicely, so we don't chew up cycles) */
-	//asm volatile(".1: hlt; jmp .1;");
+	asm volatile(".1: hlt; jmp .1;");
 }
 
 
