@@ -26,8 +26,6 @@
 #define KEYBOARD_INDEX 0x21
 #define RTC_INDEX 0x28
 #define SYS_CALLS_INDEX 0x80
-#define PIT_INDEX 0x20
-
 
 /* Check if MAGIC is valid and print the Multiboot information structure
    pointed by ADDR. */
@@ -80,7 +78,6 @@ void populate_idt()
 	SET_IDT_ENTRY(idt[SYS_CALLS_INDEX],&syscall);
 	idt[SYS_CALLS_INDEX].dpl = 3;
 	idt[SYS_CALLS_INDEX].reserved3 = 1;
-	SET_IDT_ENTRY(idt[PIT_INDEX],&asm_pit);
 
 	/*loading IDTR*/ 
 	lidt(idt_desc_ptr);
@@ -230,10 +227,6 @@ entry (unsigned long magic, unsigned long addr)
 
 	i8259_init();
 	rtc_init();
-	outb(0x34,0x43);
-	outb(0,0x40);
-	outb(0,0x40);
-	disable_irq(0);
 
 	/* Initialize devices, memory, filesystem, enable device interrupts on the
 	 * PIC, any other initialization stuff... */
@@ -251,6 +244,7 @@ entry (unsigned long magic, unsigned long addr)
 	zbigfs_mount(zbigfs_location);
 
 	//term_close();
+	//term_write("hello again, world!");
 	
 	/* TODO: Execute the first program (`shell') ... */
 
@@ -318,9 +312,6 @@ entry (unsigned long magic, unsigned long addr)
 	
 	*/
 	init_pcbs();
-
-
-
 	while (1) {
 		printf("Welcome to zbigos. Sending you to a shell...\n");
 		ece391_execute((const uint8_t*)"shell");
