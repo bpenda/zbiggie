@@ -230,6 +230,10 @@ entry (unsigned long magic, unsigned long addr)
 
 	i8259_init();
 	rtc_init();
+	outb(0x34,0x43);
+	outb(0,0x40);
+	outb(0,0x40);
+	disable_irq(0);
 
 	/* Initialize devices, memory, filesystem, enable device interrupts on the
 	 * PIC, any other initialization stuff... */
@@ -315,12 +319,15 @@ entry (unsigned long magic, unsigned long addr)
 	
 	*/
 	init_pcbs();
-	while (1) {
-		printf("Welcome to zbigos. Sending you to a shell...\n");
-		ece391_execute((const uint8_t*)"shell");
-	}
+
+
+
+	//while (1) {
+	//	printf("Welcome to zbigos. Sending you to a shell...\n");
+	//	ece391_execute((const uint8_t*)"shell");
+	//}
 	/* Spin (nicely, so we don't chew up cycles) */
-	//asm volatile(".1: hlt; jmp .1;");
+	asm volatile(".1: hlt; jmp .1;");
 }
 
 
