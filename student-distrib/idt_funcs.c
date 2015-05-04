@@ -4,14 +4,11 @@
 #include "x86_desc.h"
 #include "i8259.h"
 #include "rtc.h"
-#include "ece391syscall.h"
 #include "page.h"
 #define USER_EXCEPT_CODE 256
-#define LOWER_PRINT_BOUND 1
-#define UPPER_PRINT_BOUND 123
-#define UPPER_LETTER_BOUND 123
-#define LOWER_LETTER_BOUND 96
-
+void ece391_halt(int code){
+    asm volatile("movl $1, %%eax; movl %0, %%ebx; int $0x80" : : "r"(code) : "eax", "ebx");
+}
 char scan2ASCII[256] = 
 	{
 		0x00, 0x00, 0x31, 0x32, 0x33, 0x34,
@@ -52,12 +49,6 @@ int caps_lock_flag = 0, alt_flag = 0;
 
 volatile int rtc_f = 0;
 
-/*
-* uint8_t INB(uint8_t port);
-*   Inputs: port, what port to read a byte from
-*   Return: what was read
-*   Function: Read a byte froma a port
-*/
 extern uint8_t
 INB (uint16_t port)
 {
@@ -69,12 +60,6 @@ INB (uint16_t port)
  return ret;
 }
 
-/*
-* uint16_t INW(uint16_t port);
-*   Inputs: port, what port to read a word from
-*   Return: what was read
-*   Function: Read a word froma a port
-*/
 extern uint16_t
 INW (uint16_t port)
 {
@@ -86,12 +71,6 @@ INW (uint16_t port)
  return ret;
 }
 
-/*
-* void common_interrupt();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for an unkown interrupt
-*/
 extern void common_interrupt()
 {
 	//clear();
@@ -100,12 +79,7 @@ extern void common_interrupt()
 	while(1);
 }
 
-/*
-* void divide_by_zero();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for a divide by zero exception
-*/
+//0
 extern void divide_by_zero()
 {
 	//clear();
@@ -113,158 +87,92 @@ extern void divide_by_zero()
     ece391_halt(USER_EXCEPT_CODE);
 	while(1);
 }
-/*
-* void reserved_1();
-*   Inputs: none
-*   Return: none
-*   Function: Interrupt space reserved for intel
-*/
+//1
 extern void reserved_1()
 {
 	printf("Intel use only\n");
 	while(1);
 }
-/*
-* void non_maskable_interrupt();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for a non-maskable interrupt exception
-*/
+//2
 extern void non_maskable_interrupt()
 {
 	printf("non_maskable_interrupt\n");
     ece391_halt(USER_EXCEPT_CODE);
 	while(1);
 }
-/*
-* void breakpoint();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for a breakpoint exception
-*/
+//3
 extern void breakpoint()
 {
 	printf("breakpoint\n");
     ece391_halt(USER_EXCEPT_CODE);
 	while(1);
 }
-/*
-* void overflow();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for an overflow exception
-*/
+//4
 extern void overflow()
 {
 	printf("overflow\n");
     ece391_halt(USER_EXCEPT_CODE);
 	while(1);
 }
-/*
-* void BOUND_range_exceeded();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for an out of bounds exception
-*/
+//5
 extern void BOUND_range_exceeded()
 {
 	printf("BOUND_range_exceeded\n");
     ece391_halt(USER_EXCEPT_CODE);
 	while(1);
 }
-/*
-* void invalid_opcode();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for an invalid opcode exception
-*/
+//6
 extern void invalid_opcode()
 {
 	printf("invalid_opcode\n");
     ece391_halt(USER_EXCEPT_CODE);
 	while(1);
 }
-/*
-* void device_not_available();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for a device not available exception
-*/
+//7
 extern void device_not_available()
 {
 	printf("device_not_available\n");
     ece391_halt(USER_EXCEPT_CODE);
 	while(1);
 }
-/*
-* void double_fault();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for a double fault exception
-*/
+//8
 extern void double_fault()
 {
 	printf("double_fault\n");
     ece391_halt(USER_EXCEPT_CODE);
 	while(1);
 }
-/*
-* void coprocessor_segment_overrun();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for a coprocessor segment overrun exception
-*/
+//9
 extern void coprocessor_segment_overrun()
 {
 	printf("coprocessor_segment_overrun\n");
     ece391_halt(USER_EXCEPT_CODE);
 	while(1);
 }
-/*
-* void invalid_TSS();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for an invalid task state segment exception
-*/
+//10
 extern void invalid_TSS()
 {
 	printf("invalid_TSS\n");
 	while(1);
 }
-/*
-* void segment_not_present();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for a segment not present exception
-*/
+//11
 extern void segment_not_present()
 {
 	printf("segment_not_present\n");
     ece391_halt(USER_EXCEPT_CODE);
 	while(1);
 }
-/*
-* void stack_segment_fault();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for a stack segment fault exception
-*/
+//12
 extern void stack_segment_fault()
 {
 	printf("stack_segment_fault\n");
     ece391_halt(USER_EXCEPT_CODE);
 	while(1);
 }
-/*
-* void general_protection();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for a general protection exception
-*/
+//13
 extern void general_protection()
 {
-    int x;
-    //Inline assembly grabs error code
+    int x; 
     asm volatile("popl %%ecx\n \
              movl %%ecx, %0"
              :"=r" (x)
@@ -275,16 +183,10 @@ extern void general_protection()
     ece391_halt(USER_EXCEPT_CODE);
 	while(1);
 }
-/*
-* void page_fault();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for a page fault exception
-*/
+//14
 extern void page_fault()
 {
     int x; 
-    //Inline assembly grabs error code
     asm volatile("popl %%ecx\n \
              movl %%ecx, %0"
              :"=r" (x)
@@ -298,48 +200,28 @@ extern void page_fault()
 
 //15 Intel Reserved
 
-/*
-* void floating_point_error();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for a floating point error exception
-*/
+//16
 extern void floating_point_error()
 {
 	printf("floating_point_error\n");
     ece391_halt(USER_EXCEPT_CODE);
 	while(1);
 }
-/*
-* void alignment_check();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for an alignment check exception
-*/
+//17
 extern void alignment_check()
 {
 	printf("alignment_check\n");
     ece391_halt(USER_EXCEPT_CODE);
 	while(1);
 }
-/*
-* void machine_check();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for a machine check exception
-*/
+//18
 extern void machine_check()
 {
 	printf("machine_check\n");
     ece391_halt(USER_EXCEPT_CODE);
 	while(1);
 }
-/*
-* void SIMD_floating_point_exception();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for a SIMD floating point exception
-*/
+//19
 extern void SIMD_floating_point_exception()
 {
 	printf("SIMD_floating_point_exception\n");
@@ -353,13 +235,6 @@ extern void SIMD_floating_point_exception()
 //User Defined: Call common interrupt
 
 //0x21 - keyboard
-/*
-* void key_handler();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for a keyboard interrupt. Certain
-*			  key presses either print or call functions
-*/
 extern void key_handler()
 {
 	
@@ -367,15 +242,13 @@ extern void key_handler()
     int i;
     char notPrintable = 0;
 	cli();
-	//Read the input
 	in = (char)inb(KEY_PORT);
 
 
-	int isALetter = (scan2ASCII[(int)in] > LOWER_LETTER_BOUND) && (scan2ASCII[(int)in] < UPPER_LETTER_BOUND);
-	int isPrintable = (((int)in > LOWER_PRINT_BOUND) && ((int)in < UPPER_PRINT_BOUND));
+	int isALetter = (scan2ASCII[(int)in] > 96) && (scan2ASCII[(int)in] < 123);
+	int isPrintable = (((int)in > 1) && ((int)in < 123));
 
 	//printf("%x", in); 
-	//Check if input is non-printable
     for(i = 0; i < 128; i ++)
     {
        if(in == notPrintableArray[i])
@@ -385,11 +258,10 @@ extern void key_handler()
     {
 		//do nothing!	
     }
-    //Check all of the cases for the character scan code
     else if (in == DOWN_ARROW)
 	{
 		//do nothing
-        //term_write(0,"hi!",3);
+        term_write(0,"hi!",3);
 	}
     else if(in == UP_ARROW)
     {
@@ -489,12 +361,7 @@ extern void key_handler()
 	sti();
 	send_eoi(KEY_LINE);	
 }
-/*
-* void rtc_handler();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for an rtc interrupt
-*/
+
 extern void rtc_handler()
 {
 	cli();
@@ -507,13 +374,6 @@ extern void rtc_handler()
 	send_eoi(RTC_LINE);
 }
 
-/*
-* void pit_handler();
-*   Inputs: none
-*   Return: none
-*   Function: Handler for a PIT interrupt
-*/
-
 extern void pit_handler()
 {
 	cli();
@@ -521,18 +381,17 @@ extern void pit_handler()
 	sti();
 	send_eoi(PIT_LINE);
 }
-/*
-* void something_went_wrong();
-*   Inputs: none
-*   Return: none
-*   Function: If something went extremely outside of out expectations
-*			  this is called
-*/
 
 extern void something_went_wrong()
 {
 	printf("Ughhhh we did something wrong. . . Awks \n");
 	while(1);
+}
+
+extern int system_calls()
+{
+	printf("system_calls to be set up later\n");
+	return 0;
 }
 
 
